@@ -26,7 +26,7 @@ const generateSet = () => {
 };
 
 const Times: NextPage = () => {
-  const set = useMemo(generateSet, []);
+  const [set, setSet] = useState(generateSet);
   const [state, setState] = useState<"ready" | "countdown" | "start" | "done">(
     "ready"
   );
