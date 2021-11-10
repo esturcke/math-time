@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
-import { useMemo } from "react";
-import styles from "../styles/Times.module.css";
+import { useEffect, useMemo, useState } from "react";
+import { Button } from "@chakra-ui/react";
+import Countdown from "../../components/Countdown";
 
 type Problem = {
   factors: [number, number];
@@ -27,14 +27,29 @@ const generateSet = () => {
 
 const Times: NextPage = () => {
   const set = useMemo(generateSet, []);
+  const [state, setState] = useState<"ready" | "countdown" | "start" | "done">(
+    "ready"
+  );
+  const [startTime, setStartTime] = useState<number>(0);
+
+  useEffect(() => {
+    if (state === "start") setStartTime(Date.now());
+  }, [state]);
+
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
         <title>🎉 Times Time</title>
         <meta name="description" content="Maths for kids" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}></main>
+      <main>
+        {state === "ready" ? (
+          <Button onClick={() => setState("countdown")}>Start!</Button>
+        ) : state === "countdown" ? (
+          <Countdown onDone={() => setState("start")} />
+        ) : null}
+      </main>
     </div>
   );
 };
