@@ -1,7 +1,16 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useState } from "react";
-import { Box, Button, Flex, Input, Link, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Input,
+  Link,
+  Progress,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { createIcon } from "@chakra-ui/icons";
 import Countdown from "../components/Countdown";
 import produce from "immer";
@@ -19,6 +28,7 @@ const shuffle = <T extends unknown>(array: T[]) => {
 };
 
 const range = [0, 12];
+const questions = 20;
 
 const generateSet = () => {
   let pairs: Problem[] = [];
@@ -26,7 +36,7 @@ const generateSet = () => {
     for (let j = range[0]; j <= i; j++)
       pairs.push({ factors: Math.random() > 0.5 ? [i, j] : [j, i] });
   shuffle(pairs);
-  return pairs.slice(0, 30);
+  return pairs.slice(0, questions);
 };
 
 const Quiz = ({ onDone }: { onDone: (set: Problem[]) => void }) => {
@@ -69,33 +79,39 @@ const Quiz = ({ onDone }: { onDone: (set: Problem[]) => void }) => {
   };
 
   return n >= set.length ? null : (
-    <Flex alignItems="center" sx={{ gap: 10 }}>
-      <Text fontSize="6xl" whiteSpace="nowrap">
-        {set[n].factors[0]} × {set[n].factors[1]} ={" "}
+    <Stack>
+      <Text>
+        {n + 1} of {set.length}
       </Text>
-      <Box position="relative">
-        <Input
-          value={value}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          autoFocus
-          fontSize="6xl"
-          height="2em"
-          width="4ch"
-          variant="flushed"
-        />
-        {tryAgain > 0 && (
-          <Text
-            position="absolute"
-            key="tryAgain"
-            fontSize="xl"
-            whiteSpace="nowrap"
-          >
-            Try again!!
-          </Text>
-        )}
-      </Box>
-    </Flex>
+      <Progress width="3xs" value={(100 * n) / set.length} />
+      <Flex alignItems="center" sx={{ gap: 10 }}>
+        <Text fontSize="6xl" whiteSpace="nowrap">
+          {set[n].factors[0]} × {set[n].factors[1]} ={" "}
+        </Text>
+        <Box position="relative">
+          <Input
+            value={value}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            autoFocus
+            fontSize="6xl"
+            height="2em"
+            width="4ch"
+            variant="flushed"
+          />
+          {tryAgain > 0 && (
+            <Text
+              position="absolute"
+              key="tryAgain"
+              fontSize="xl"
+              whiteSpace="nowrap"
+            >
+              Try again!!
+            </Text>
+          )}
+        </Box>
+      </Flex>
+    </Stack>
   );
 };
 
