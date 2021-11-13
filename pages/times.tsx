@@ -10,6 +10,7 @@ import {
   Progress,
   Stack,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { createIcon } from "@chakra-ui/icons";
 import Countdown from "../components/Countdown";
@@ -42,8 +43,7 @@ const generateSet = () => {
 const Quiz = ({ onDone }: { onDone: (set: Problem[]) => void }) => {
   const [set, setSet] = useState(generateSet);
   const [n, setN] = useState(0);
-  const [tryAgain, setTryAgain] = useState(0);
-
+  const toast = useToast();
   // check if done
   useEffect(() => {
     if (n >= set.length) onDone(set);
@@ -53,9 +53,9 @@ const Quiz = ({ onDone }: { onDone: (set: Problem[]) => void }) => {
   const answer = useCallback(
     ({ n, answer }: { n: number; answer: number }) => {
       if (set[n].factors[0] * set[n].factors[1] !== answer) {
-        setTryAgain((n) => n + 1);
+        toast({ title: "Nope, try again.", status: "error" });
       } else {
-        setTryAgain(0);
+        toast({ title: "That's right!", status: "success" });
         setSet(
           produce((draft) => {
             draft[n].answer = answer;
@@ -65,7 +65,7 @@ const Quiz = ({ onDone }: { onDone: (set: Problem[]) => void }) => {
       }
       setValue("");
     },
-    [set]
+    [set, toast]
   );
 
   const [value, setValue] = useState("");
@@ -83,13 +83,14 @@ const Quiz = ({ onDone }: { onDone: (set: Problem[]) => void }) => {
       <Text>
         {n + 1} of {set.length}
       </Text>
-      <Progress width="3xs" value={(100 * n) / set.length} />
+      <Progress size="xs" width="3xs" value={(100 * n) / set.length} />
       <Flex alignItems="center" sx={{ gap: 10 }}>
         <Text fontSize="6xl" whiteSpace="nowrap">
           {set[n].factors[0]} × {set[n].factors[1]} ={" "}
         </Text>
         <Box position="relative">
           <Input
+            type="number"
             value={value}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
@@ -99,16 +100,6 @@ const Quiz = ({ onDone }: { onDone: (set: Problem[]) => void }) => {
             width="4ch"
             variant="flushed"
           />
-          {tryAgain > 0 && (
-            <Text
-              position="absolute"
-              key="tryAgain"
-              fontSize="xl"
-              whiteSpace="nowrap"
-            >
-              Try again!!
-            </Text>
-          )}
         </Box>
       </Flex>
     </Stack>
