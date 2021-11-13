@@ -14,9 +14,9 @@ const Countdown = ({ onDone }: Props) => {
     return () => clearInterval(id);
   }, []);
   useEffect(() => {
-    if (n === -1) onDone();
+    if (n < 0) onDone();
   }, [n, onDone]);
-  return <Text fontSize="6xl">{n > 0 ? n : n === 0 ? "GO!" : false}</Text>;
+  return <Text fontSize="6xl">{n > 0 ? n : n === 0 ? "GO!" : null}</Text>;
 };
 
 export default Countdown;
